@@ -1,0 +1,24 @@
+[package]
+name = "wisp2socks"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.99"
+fast-socks5 = { git = "https://github.com/dizda/fast-socks5/", version = "1.0.0-rc.0" }
+futures = { version = "0.3.31", default-features = false, features = ["std", "async-await"] }
+tokio = { version = "1.47.1", features = ["full"] }
+tokio-util = { version = "0.7.16", features = ["compat"] }
+tokio-websockets = { version = "0.12.1", features = ["client", "sha1_smol", "rand", "native-tls"] }
+wisp-mux = { git = "https://github.com/mercuryworkshop/epoxy-tls", version = "6.0.0", features = ["tokio-websockets"] }
+native-tls = { version = "0.2", features = ["vendored"] }
+jni = { version = "0.10.2", default-features = false }
+futures-util = "0.3.31"
+reqwest = { version = "0.12.24", features = ["rustls-tls", "socks"] }
+
+[profile.release]
+lto = true
+
+[lib]
+name = "wisp2socks"
+crate-type = ["cdylib"]
