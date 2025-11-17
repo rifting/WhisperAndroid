@@ -1,0 +1,183 @@
+package com.mercuryworkshop.whisperandroid
+
+import android.app.Activity
+import android.content.Intent
+import android.net.VpnService
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.mercuryworkshop.whisperandroid.ui.theme.WhisperandroidTheme
+
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            WhisperandroidTheme(darkTheme = true) {
+                WhisperActivity()
+            }
+        }
+    }
+}
+
+@Composable
+fun WhisperActivity() {
+    var vpnUrl by remember { mutableStateOf("") }
+    var dohUrl by remember { mutableStateOf("") }
+    var connected by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    val vpnPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            startVpnService(context)
+            connected = true
+        } else {
+            connected = false
+            Toast.makeText(context, "VPN permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF1A1C1F), Color(0xFF111214))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.fillMaxWidth(0.85f)
+        ) {
+            Text(
+                text = "whisper",
+                color = Color(0xFFE0E0E0),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            OutlinedTextField(
+                value = vpnUrl,
+                onValueChange = { vpnUrl = it },
+                label = { Text("Wisp Server (default: wss://anura.pro/)") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF1F2124),
+                    unfocusedContainerColor = Color(0xFF1F2124),
+                    focusedLabelColor = Color(0xFFB0B3B8),
+                    focusedIndicatorColor = Color(0xFF5A5F67),
+                    unfocusedIndicatorColor = Color(0xFF3A3D42),
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = dohUrl,
+                onValueChange = { dohUrl = it },
+                label = { Text("DoH URL (default: Cloudflare)") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF1F2124),
+                    unfocusedContainerColor = Color(0xFF1F2124),
+                    focusedLabelColor = Color(0xFFB0B3B8),
+                    focusedIndicatorColor = Color(0xFF5A5F67),
+                    unfocusedIndicatorColor = Color(0xFF3A3D42),
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    if (!connected) {
+                        val intent = VpnService.prepare(context)
+                        if (intent != null) {
+                            vpnPermissionLauncher.launch(intent)
+                        } else {
+                            val startIntent = Intent(context, WhisperService::class.java).apply {
+                                action = WhisperService.ACTION_CONNECT
+                                putExtra(WhisperService.EXTRA_VPN_URL, vpnUrl)
+                                putExtra(WhisperService.EXTRA_DOH_URL, dohUrl)
+                            }
+                            context.startService(startIntent)
+                            connected = true
+                        }
+                    } else {
+                        val stopIntent = Intent(context, WhisperService::class.java)
+                        stopIntent.action = WhisperService.ACTION_DISCONNECT
+                        context.startService(stopIntent)
+                        connected = false
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2C2F33),
+                    contentColor = Color(0xFFE0E0E0)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text(
+                    text = if (connected) "Stop" else "Start",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+
+
+            Text(
+                text = if (connected) "Connected" else "Disconnected",
+                color = Color(0xFF9EA1A6),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+fun startVpnService(context: android.content.Context) {
+    val intent = Intent(context, WhisperService::class.java)
+    context.startService(intent)
+}
+
+fun stopVpnService(context: android.content.Context) {
+    val intent = Intent(context, WhisperService::class.java)
+    intent.action = "com.mercuryworkshop.whisperandroid.STOP_VPN"
+    context.startService(intent)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewWhisperActivity() {
+    WhisperandroidTheme(darkTheme = true) {
+        WhisperActivity()
+    }
+}
