@@ -58,7 +58,7 @@ async fn forward_dns_over_doh(query: &[u8], port: i32, doh_url: &str) -> Result<
 
 #[unsafe(no_mangle)]
 #[allow(non_snake_case)]
-pub unsafe extern "C" fn Java_com_example_test_MyVpnService_startWisp2Socks(
+pub unsafe extern "C" fn Java_com_mercuryworkshop_whisperandroid_WhisperService_startWisp2Socks(
     env: JNIEnv,
     _: JObject,
     url: JString,
@@ -92,7 +92,7 @@ pub unsafe extern "C" fn Java_com_example_test_MyVpnService_startWisp2Socks(
 
 #[unsafe(no_mangle)]
 #[allow(non_snake_case)]
-pub unsafe extern "C" fn Java_com_example_test_MyVpnService_stopWisp2Socks(
+pub unsafe extern "C" fn Java_com_mercuryworkshop_whisperandroid_WhisperService_stopWisp2Socks(
     env: JNIEnv,
     _: JObject,
 ) -> jstring {
