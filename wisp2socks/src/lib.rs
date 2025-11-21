@@ -292,6 +292,7 @@ async fn serve(
                             if size <= header_len { continue; }
                             let dns_payload = &buf[header_len..size];
 
+                            // TODO: Check if traffic is for 10.0.0.144 before forwarding to DNS server
                             let doh_resp = match forward_dns_over_doh(dns_payload, serverport, &doh_url).await {
                                 Ok(resp) => resp,
                                 Err(_) => continue,
