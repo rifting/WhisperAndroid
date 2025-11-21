@@ -2,6 +2,7 @@
 A Wisp protocol client for Android, meant for circumventing censorship in strict environments.
 
 This is still in development - the codebase is quite cursed, for example, every UDP packet being forwarded to Cloudflare's DNS server. I would not reccomend using this for production applications quite yet.
+Also no ipv6
 
 # Compilation
 Yeah so compiling this sucks lol
