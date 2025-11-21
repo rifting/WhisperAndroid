@@ -8,12 +8,14 @@ Also no ipv6
 Yeah so compiling this sucks lol
 
 You may skip the tun2socks step if you'd like to use the prebuilt aar file I've provided.
+
 Requirements:
 - Android SDK
 - Android NDK (older version for tun2socks, you will need to install <=21)
 - Rust
 - Go
 - Java
+- 
 The commands here are for ndk version r27d with x86_64 target. You may have to change these depending on your setup.
 
 ## Cloning
