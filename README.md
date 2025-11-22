@@ -21,7 +21,7 @@ The commands here are for ndk version r27d with x86_64 target. You may have to c
 ## Cloning
 ```
 git clone https://github.com/rifting/WhisperAndroid.git
-cd WhisperAndroid`
+cd WhisperAndroid
 git submodule update --init
 ```
 
