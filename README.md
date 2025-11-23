@@ -16,6 +16,7 @@ Requirements:
 - Go
 - Java
 - 🧠
+
 The commands here are for ndk version r27d with x86_64 target. You may have to change these depending on your setup.
 
 ## Cloning
