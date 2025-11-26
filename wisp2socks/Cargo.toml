@@ -15,6 +15,9 @@ native-tls = { version = "0.2", features = ["vendored"] }
 jni = { version = "0.10.2", default-features = false }
 futures-util = "0.3.31"
 reqwest = { version = "0.12.24", features = ["rustls-tls", "socks"] }
+tokio-tungstenite = "0.20"
+url = "2.5.7"
+http = "1.4.0"
 
 [profile.release]
 lto = true

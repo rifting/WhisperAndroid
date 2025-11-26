@@ -15,6 +15,8 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use wisp_mux::{ws::{TokioWebsocketsTransport, TransportExt}, packet::StreamType};
 use reqwest::{Client, Proxy};
 use jni::objects::JString;
+use tokio_websockets::ClientBuilder;
+use http::Uri;
 
 static SERVICE: OnceLock<Mutex<Option<oneshot::Sender<()>>>> = OnceLock::new();
 static RUNTIME: OnceLock<Runtime> = OnceLock::new();
@@ -122,13 +124,17 @@ async fn start_service(wisp_url: &str, socks_addr: &str, port: i32, doh_url: &st
     let (shutdown_tx, shutdown_rx) = oneshot::channel();
     *get_service().lock().unwrap() = Some(shutdown_tx);
 
-    let ws = tokio_websockets::ClientBuilder::new()
-        .uri(wisp_url)
-        .context("Invalid WebSocket URI")?
-        .connect()
-        .await
-        .context("Failed to connect to Wisp server")?
-        .0;
+    
+    let uri: Uri = wisp_url
+        .parse()
+        .context("Invalid WebSocket URI")?;
+
+    let builder = ClientBuilder::from_uri(uri);
+    let (ws, _resp): (_, http::Response<()>) = builder
+    .connect()
+    .await
+    .context("Failed to connect to Wisp server")?;
+
 
     let transport = TokioWebsocketsTransport(ws);
     let (rx, tx) = transport.split_fast();
@@ -292,7 +298,6 @@ async fn serve(
                             if size <= header_len { continue; }
                             let dns_payload = &buf[header_len..size];
 
-                            // TODO: Check if traffic is for 10.0.0.144 before forwarding to DNS server
                             let doh_resp = match forward_dns_over_doh(dns_payload, serverport, &doh_url).await {
                                 Ok(resp) => resp,
                                 Err(_) => continue,
