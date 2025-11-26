@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
 import com.mercuryworkshop.whisperandroid.ui.theme.WhisperandroidTheme
 
 class MainActivity : ComponentActivity() {
@@ -74,6 +76,12 @@ fun WhisperActivity() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth(0.85f)
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.wisp_foreground),
+                contentDescription = "wisp",
+                modifier = Modifier
+                    .size(100.dp)
+            )
             Text(
                 text = "whisper",
                 color = Color(0xFFE0E0E0),
@@ -145,7 +153,7 @@ fun WhisperActivity() {
                     .height(50.dp)
             ) {
                 Text(
-                    text = if (connected) "Stop" else "Start",
+                    text = if (connected) "Disconnect" else "Connect",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -155,9 +163,9 @@ fun WhisperActivity() {
 
             Text(
                 text = if (connected) "Connected" else "Disconnected",
-                color = Color(0xFF9EA1A6),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                color = if (connected) Color(0xFF00FF00) else Color(0xFF9EA1A6),
+                fontSize = 32.sp,
+                fontWeight = if (connected) FontWeight.Bold else FontWeight.Medium
             )
         }
     }
