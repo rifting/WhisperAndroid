@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rifting/WhisperAndroid/a970f8e08e843a74d80deeea826d231135b92b7c/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" />
+</p>
+
 # WhisperAndroid
 A Wisp protocol client for Android, meant for circumventing censorship in strict environments.
 
