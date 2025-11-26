@@ -180,38 +180,22 @@ class WhisperService : VpnService() {
             val localTun = tun
             tun = null
 
-            try {
-                localTun?.let {
-                    try {
-                        it.detachFd()
-                    } catch (e: IllegalStateException) {
-                        Log.w("Whisper", "TUN already closed, skipping detach")
-                    }
+            // dont block main thread
+            executors.submit {
+                try {
+                    localTun?.let { tunFd ->
+                        try { tunFd.detachFd() } catch (_: IllegalStateException) { }
 
-                    try {
-                        Engine.stop()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                        try { Engine.stop() } catch (e: Exception) { e.printStackTrace() }
 
-                    try {
-                        stopWisp2Socks()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                        try { stopWisp2Socks() } catch (e: Exception) { e.printStackTrace() }
                     }
-
-                    try {
-                        Thread.sleep(2000)
-                    } catch (e: InterruptedException) {
-                        Thread.currentThread().interrupt()
-                    }
+                } finally {
+                    isShuttingDown = false
                 }
-            } finally {
-                isShuttingDown = false
             }
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
