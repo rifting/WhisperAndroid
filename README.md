@@ -5,13 +5,9 @@
 # WhisperAndroid
 A Wisp protocol client for Android, meant for circumventing censorship in strict environments.
 
-This is still in development - the codebase is quite cursed, for example, every UDP packet being forwarded to Cloudflare's DNS server. I would not reccomend using this for production applications quite yet.
-Also no ipv6
-
 # Compilation
-Yeah so compiling this sucks lol
-
-You may skip the tun2socks step if you'd like to use the prebuilt aar file I've provided.
+If you are only changing the frontend, you do not need to recompile tun2socks or libwisp2socks.so unless you would like not to use the prebuilts I've included.
+The same goes for compiling libwisp2socks.so - tun2socks does not have to be recompiled.
 
 Requirements:
 - Android SDK
@@ -19,7 +15,8 @@ Requirements:
 - Rust
 - Go
 - Java
-- 
+- Linux based OS. I haven't tested compilation on Windows or MacOS.
+
 The commands here are for ndk version r27d with x86_64 target. You may have to change these depending on your setup.
 
 ## Cloning
@@ -47,6 +44,7 @@ cp -r "$DEST"/* android/app/libs/
 ## libwisp2socks.so
 [Guide for setting up Rust toolchain for Android targets](https://mozilla.github.io/firefox-browser-architecture/experiments/2017-09-21-rust-on-android.html)
 
+x86_64 example:
 ```
 cd wisp2socks
 export PATH=$PATH:~/NDK/x86_64/bin
