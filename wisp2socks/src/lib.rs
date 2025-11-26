@@ -291,11 +291,20 @@ async fn serve(
 
                             let addr_type = buf[3];
                             let header_len = match addr_type {
-                                1 => 10,
-                                3 => 7 + buf[4] as usize,
+                                1 => 10,                  // IPv4
+                                3 => 7 + buf[4] as usize, // domain
                                 _ => continue,
                             };
                             if size <= header_len { continue; }
+
+                            if addr_type == 1 {
+                                let dest_ip = std::net::Ipv4Addr::new(buf[4], buf[5], buf[6], buf[7]);
+                                if dest_ip != std::net::Ipv4Addr::new(10, 0, 0, 144) {
+                                    // eprintln!("UDP that is not DNS for 10.0.0.144 is not supported!");
+                                    continue; // Skip packets not for 10.0.0.144, our fake DNS server
+                                }
+                            }
+
                             let dns_payload = &buf[header_len..size];
 
                             let doh_resp = match forward_dns_over_doh(dns_payload, serverport, &doh_url).await {
@@ -311,6 +320,7 @@ async fn serve(
                                 .await
                                 .map_err(|e| SocksServerError::Io { source: e, context: "sending to UDP socket" })?;
                         }
+
                     },
                 ).await {
                     eprintln!("UDP proxy failed: {:?}", e);
