@@ -42,7 +42,7 @@ class WhisperService : VpnService() {
     private fun startVpn(wispServerUrl: String?, dohUrl: String?) {
 
         val wispServer = if (wispServerUrl.isNullOrBlank()) {
-            "wss://anura.pro/"
+            "wss://nebulaservices.org/wisp/"
         } else {
             var url = wispServerUrl
             if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
@@ -211,11 +211,6 @@ class WhisperService : VpnService() {
         synchronized(cleanupLock) {
             stopForeground(true)
             cleanupTun()
-            try {
-                Thread.sleep(1000)
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-            }
 
             try {
                 executors.shutdown()

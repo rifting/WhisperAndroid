@@ -83,7 +83,7 @@ fun WhisperActivity() {
                     .size(100.dp)
             )
             Text(
-                text = "whisper",
+                text = "Whisper",
                 color = Color(0xFFE0E0E0),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold
@@ -92,7 +92,7 @@ fun WhisperActivity() {
             OutlinedTextField(
                 value = vpnUrl,
                 onValueChange = { vpnUrl = it },
-                label = { Text("Wisp Server (default: wss://anura.pro/)") },
+                label = { Text("Wisp Server (default: Nebula)") },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFF1F2124),
@@ -163,7 +163,7 @@ fun WhisperActivity() {
 
             Text(
                 text = if (connected) "Connected" else "Disconnected",
-                color = if (connected) Color(0xFF00FF00) else Color(0xFF9EA1A6),
+                color = if (connected) Color(0xFF00FF00) else Color(0xFFEE4B2B),
                 fontSize = 32.sp,
                 fontWeight = if (connected) FontWeight.Bold else FontWeight.Medium
             )
