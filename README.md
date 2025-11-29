@@ -11,7 +11,7 @@ The same goes for compiling libwisp2socks.so - tun2socks does not have to be rec
 
 Requirements:
 - Android SDK
-- Android NDK (older version for tun2socks, you will need to install <=21)
+- Android NDK
 - Rust
 - Go
 - Java
@@ -29,15 +29,16 @@ git submodule update --init
 ## Tun2Socks
 ```
 cd tun2socks
+go get golang.org/x/mobile/bind@latest
+go install golang.org/x/mobile/cmd/gobind@latest
 go install golang.org/x/mobile/cmd/gomobile@latest
-gomobile init
-sdkmanager --install "platforms;android-21"
-sdkmanager --install "ndk;21.4.7075529"
-export ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/21.4.7075529
+gomobile init -ndk $ANDROID_NDK_HOME -androidapi 21
+sdkmanager --install "ndk;28.0.12433566"
+export ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/28.0.12433566
 export GOANDROIDMINAPI=19
 DEST=$(pwd)/app/libs
 mkdir -p "$DEST"
-gomobile bind -o "$DEST/tun2socks.aar" -target android ./engine
+gomobile bind -androidapi 21 -o "$DEST/tun2socks.aar" -target android ./engine
 cp -r "$DEST"/* android/app/libs/
 ```
 
