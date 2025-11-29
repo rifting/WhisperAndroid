@@ -4,6 +4,7 @@
 
 # WhisperAndroid
 A Wisp protocol client for Android, meant for circumventing censorship in strict environments.
+Works on Android 15+, can work on Android <15 if you use using an older NDK.
 
 # Compilation
 If you are only changing the frontend, you do not need to recompile tun2socks or libwisp2socks.so unless you would like not to use the prebuilts I've included.
@@ -11,7 +12,7 @@ The same goes for compiling libwisp2socks.so - tun2socks does not have to be rec
 
 Requirements:
 - Android SDK
-- Android NDK
+- Android NDK (r28+)
 - Rust
 - Go
 - Java
