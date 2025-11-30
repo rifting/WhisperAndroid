@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +46,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private fun cleanWispUrl(wispServerUrl: String): String {
+    val wispServer = if (wispServerUrl.isNullOrBlank()) {
+        "wss://nebulaservices.org/wisp/"
+    } else {
+        var url = wispServerUrl
+        if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
+            url = "wss://$url"
+        }
+        if (!url.endsWith("/")) {
+            url += "/"
+        }
+        url
+    }
+    return wispServer;
+}
+
 @Composable
 fun WhisperActivity() {
     var vpnUrl by remember { mutableStateOf("") }
@@ -50,6 +69,7 @@ fun WhisperActivity() {
     var connected by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     val vpnPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -66,6 +86,11 @@ fun WhisperActivity() {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    focusManager.clearFocus()
+                }
+            }
             .background(
                 Brush.verticalGradient(
                     colors = listOf(Color(0xFF1A1C1F), Color(0xFF111214))
@@ -99,66 +124,59 @@ fun WhisperActivity() {
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
-
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth(),
-//                horizontalArrangement = Arrangement.spacedBy(10.dp)
-//            ) {
-//                Button(
-//                    onClick = { /* TODO */ },
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color(0xFF2C2F33),
-//                        contentColor = Color(0xFFE0E0E0)
-//                    ),
-//                    shape = RoundedCornerShape(12.dp),
-//                    modifier = Modifier
-//                        .weight(1.2f)
-//                        .height(70.dp)
-//                ) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.qricon),
-//                        contentDescription = "a qr code",
-//                        modifier = Modifier.size(36.dp)
-//                    )
-//                    Spacer(modifier = Modifier.width(16.dp))
-//                    Text(
-//                        "Scan QR Code",
-//                        fontSize = 20.sp
-//                    )
-//                }
-//
-//            }
-
-            OutlinedTextField(
-                value = vpnUrl,
-                onValueChange = { vpnUrl = it },
-                label = { Text("Wisp Server (default: Nebula)") },
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF1F2124),
-                    unfocusedContainerColor = Color(0xFF1F2124),
-                    focusedLabelColor = Color(0xFFB0B3B8),
-                    focusedIndicatorColor = Color(0xFF5A5F67),
-                    unfocusedIndicatorColor = Color(0xFF3A3D42),
-                ),
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = if (connected) "Connected to ${cleanWispUrl(vpnUrl)}" else "Disconnected",
+                color = if (connected) Color(0xFF00FF00) else Color(0xFFEE4B2B),
+                fontSize = 16.sp,
+                fontWeight = if (connected) FontWeight.Bold else FontWeight.Medium
             )
 
-            OutlinedTextField(
-                value = dohUrl,
-                onValueChange = { dohUrl = it },
-                label = { Text("DoH URL (default: Cloudflare)") },
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFF1F2124),
-                    unfocusedContainerColor = Color(0xFF1F2124),
-                    focusedLabelColor = Color(0xFFB0B3B8),
-                    focusedIndicatorColor = Color(0xFF5A5F67),
-                    unfocusedIndicatorColor = Color(0xFF3A3D42),
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = "Wisp Server",
+                    color = Color(0xFFB0B3B8),
+                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+                )
+
+                OutlinedTextField(
+                    value = vpnUrl,
+                    onValueChange = { vpnUrl = it },
+                    placeholder = { Text("wss://nebulaservices.org/wisp/") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFF1F2124),
+                        unfocusedContainerColor = Color(0xFF1F2124),
+                        focusedLabelColor = Color(0xFFB0B3B8),
+                        focusedIndicatorColor = Color(0xFF5A5F67),
+                        unfocusedIndicatorColor = Color(0xFF3A3D42),
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(16.dp))
+                
+                Text(
+                    text = "DoH URL",
+                    color = Color(0xFFB0B3B8),
+                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+                )
+
+                OutlinedTextField(
+                    value = dohUrl,
+                    onValueChange = { dohUrl = it },
+                    placeholder = { Text("https://cloudflare-dns.com/dns-query") },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFF1F2124),
+                        unfocusedContainerColor = Color(0xFF1F2124),
+                        focusedLabelColor = Color(0xFFB0B3B8),
+                        focusedIndicatorColor = Color(0xFF5A5F67),
+                        unfocusedIndicatorColor = Color(0xFF3A3D42),
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -178,14 +196,18 @@ fun WhisperActivity() {
                             connected = true
                         }
                     } else {
-                        val stopIntent = Intent(context, WhisperService::class.java)
-                        stopIntent.action = WhisperService.ACTION_DISCONNECT
+                        val stopIntent = Intent(context, WhisperService::class.java).apply {
+                            action = WhisperService.ACTION_DISCONNECT
+                        }
                         context.startService(stopIntent)
                         connected = false
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2C2F33),
+                    containerColor = if (connected)
+                        Color(0xFF912915)
+                    else
+                        Color(0xFF2C2F33),
                     contentColor = Color(0xFFE0E0E0)
                 ),
                 shape = RoundedCornerShape(12.dp),
@@ -199,15 +221,28 @@ fun WhisperActivity() {
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
-
-
-            Text(
-                text = if (connected) "Connected" else "Disconnected",
-                color = if (connected) Color(0xFF00FF00) else Color(0xFFEE4B2B),
-                fontSize = 32.sp,
-                fontWeight = if (connected) FontWeight.Bold else FontWeight.Medium
-            )
+//            Button(
+//                    onClick = { /* TODO */ },
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color(0xFF2C2F33),
+//                        contentColor = Color(0xFFE0E0E0)
+//                    ),
+//                    shape = RoundedCornerShape(12.dp),
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(50.dp)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.qricon),
+//                        contentDescription = "a qr code",
+//                        modifier = Modifier.size(36.dp)
+//                    )
+//                    Spacer(modifier = Modifier.width(16.dp))
+//                    Text(
+//                        "Scan QR Code",
+//                        fontSize = 20.sp
+//                    )
+//                }
         }
     }
 }
