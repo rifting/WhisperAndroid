@@ -14,6 +14,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -76,18 +78,57 @@ fun WhisperActivity() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxWidth(0.85f)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.wisp_foreground),
-                contentDescription = "wisp",
-                modifier = Modifier
-                    .size(100.dp)
-            )
-            Text(
-                text = "Whisper",
-                color = Color(0xFFE0E0E0),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.wisp_foreground),
+                    contentDescription = "wisp",
+                    modifier = Modifier.size(80.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = "Whisper",
+                    color = Color(0xFFE0E0E0),
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(10.dp)
+//            ) {
+//                Button(
+//                    onClick = { /* TODO */ },
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color(0xFF2C2F33),
+//                        contentColor = Color(0xFFE0E0E0)
+//                    ),
+//                    shape = RoundedCornerShape(12.dp),
+//                    modifier = Modifier
+//                        .weight(1.2f)
+//                        .height(70.dp)
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.qricon),
+//                        contentDescription = "a qr code",
+//                        modifier = Modifier.size(36.dp)
+//                    )
+//                    Spacer(modifier = Modifier.width(16.dp))
+//                    Text(
+//                        "Scan QR Code",
+//                        fontSize = 20.sp
+//                    )
+//                }
+//
+//            }
 
             OutlinedTextField(
                 value = vpnUrl,
