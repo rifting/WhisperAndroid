@@ -92,9 +92,7 @@ fun WhisperActivity() {
                 }
             }
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1A1C1F), Color(0xFF111214))
-                )
+                Color(0xFF111214)
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -155,7 +153,7 @@ fun WhisperActivity() {
                 )
 
                 Spacer(Modifier.height(16.dp))
-                
+
                 Text(
                     text = "DoH URL",
                     color = Color(0xFFB0B3B8),
